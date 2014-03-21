@@ -1,5 +1,5 @@
 name: Holdable Torches
-main: com.relicum.holdabletorches.Torches
+main: org.codemine.holdabletorches.Torches
 author: Minecraftfailzzz
 authors: [StashCat, webbhead, Relicum]
 version: ${project.version}

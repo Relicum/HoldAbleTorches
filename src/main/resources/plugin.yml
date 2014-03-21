@@ -1,7 +1,7 @@
 name: Holdable Torches
 main: org.codemine.holdabletorches.Torches
 author: Minecraftfailzzz
-authors: [StashCat, webbhead, Relicum]
+authors: [StashCat,webbhead,Relicum]
 version: ${project.version}
 description: Hold a torch and you will get NightVision
 

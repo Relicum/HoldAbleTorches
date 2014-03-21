@@ -1,0 +1,11 @@
+name: Holdable Torches
+main: com.relicum.holdabletorches.Torches
+author: Minecraftfailzzz
+authors: [StashCat, webbhead, Relicum]
+version: Torches-SNAPSHOT
+description: Hold a torch and you will get NightVision
+
+permissions:
+    holdabletorches.use:
+        description: allows a player to use the torches to get the effect.
+        default: op

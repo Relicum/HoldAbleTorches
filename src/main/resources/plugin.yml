@@ -10,6 +10,10 @@ commands:
     description: Get a new HoldAble Torch
     usage: /flashlight
     permission: holdabletorches.use
+  ironsight:
+    description: Display Crafting recipe for Iron Site Torch
+    usage: /ironsight
+    permission: holdabletorches.use
 
 permissions:
     holdabletorches.use:

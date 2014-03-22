@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -40,22 +42,40 @@ public class Torches extends JavaPlugin implements Listener {
     public ItemMeta torchMeta;
     public ItemMeta redMeta;
     public CommandManager cm;
-
+    public String[] ironShape;
     public void onEnable() {
         instance = this;
         PluginDescriptionFile pdf = getDescription();
         MessageUtil.logInfoFormatted("Plugin made by: " + pdf.getAuthors());
         cm=new CommandManager();
         getCommand("flashlight").setExecutor(cm);
+        getCommand("ironsight").setExecutor(cm);
         getServer().getPluginManager().registerEvents(this, this);
         applyLightMeta();
         this.torch = new ItemStack(Material.TORCH, 1);
         this.torch.setItemMeta(this.torchMeta);
 
+
+        //Make Iron Sight- Custom craftable Redstone touch
+        ItemMeta Imeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_TORCH_ON);
+        ItemStack iron = new ItemStack(Material.REDSTONE_TORCH_ON,1);
+        Imeta.setDisplayName(ChatColor.GOLD + "Iron Sight");
+        Imeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Iron Sight HoldAble Torch",ChatColor.GREEN + "Hold the torch and right click to power on","",ChatColor.GOLD + "Gives you 10 seconds of light",ChatColor.GOLD + "But only while you hold it"));
+        Imeta.addEnchant(Enchantment.DURABILITY,10,true);
+        iron.setItemMeta(Imeta);
+        ShapedRecipe sh = new ShapedRecipe(iron);
+        sh.shape(" I ", " T ", " S ").setIngredient('I',Material.IRON_INGOT).setIngredient('T',Material.REDSTONE).setIngredient('S',Material.STICK);
+        if(getServer().addRecipe(sh)){
+            MessageUtil.logInfoFormatted("New Recipe For : " + sh.getResult().getType());
+        }else{
+            MessageUtil.logServereFormatted("Unable to create new recipe");
+        }
+
+        ironShape=sh.getShape();
     }
 
     public void onDisable() {
-
+       getServer().clearRecipes();
     }
 
     public static Torches getInstance(){

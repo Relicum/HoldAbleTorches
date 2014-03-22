@@ -6,7 +6,7 @@
 
     <groupId>org.codemine.holdabletorches</groupId>
     <artifactId>HoldAbleTorches</artifactId>
-    <version>1.01-SNAPSHOT</version>
+    <version>1.02-SNAPSHOT</version>
     <name>HoldAbleTorches</name>
     <packaging>jar</packaging>
 

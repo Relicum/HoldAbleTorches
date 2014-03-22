@@ -6,7 +6,7 @@
 
     <groupId>org.codemine.holdabletorches</groupId>
     <artifactId>HoldAbleTorches</artifactId>
-    <version>1.03-BETA</version>
+    <version>1.04-BETA</version>
     <name>HoldAbleTorches</name>
     <packaging>jar</packaging>
 
@@ -76,6 +76,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
 
 </project>

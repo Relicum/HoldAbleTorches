@@ -22,6 +22,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
 import java.util.Arrays;
@@ -34,14 +35,18 @@ import java.util.Arrays;
  */
 public class Torches extends JavaPlugin implements Listener {
 
-
+    public static Torches instance;
     public ItemStack torch;
     public ItemMeta torchMeta;
     public ItemMeta redMeta;
+    public CommandManager cm;
 
     public void onEnable() {
+        instance = this;
         PluginDescriptionFile pdf = getDescription();
         MessageUtil.logInfoFormatted("Plugin made by: " + pdf.getAuthors());
+        cm=new CommandManager();
+        getCommand("flashlight").setExecutor(cm);
         getServer().getPluginManager().registerEvents(this, this);
         applyLightMeta();
         this.torch = new ItemStack(Material.TORCH, 1);
@@ -53,6 +58,10 @@ public class Torches extends JavaPlugin implements Listener {
 
     }
 
+    public static Torches getInstance(){
+        return instance;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void pq(PlayerQuitEvent e) {
         if (e.getPlayer().hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
@@ -60,7 +69,7 @@ public class Torches extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
+
     public void pj(PlayerJoinEvent e) {
         e.getPlayer().getInventory().setItem(0, this.torch.clone());
 
@@ -105,14 +114,14 @@ public class Torches extends JavaPlugin implements Listener {
                     player.updateInventory();
                     if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
                         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-                        player.playSound(player.getLocation(), Sound.PISTON_RETRACT, 5.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.CLICK, 5.0f, 1.0f);
                         MessageUtil.sendMessage(player, "Lights OUT");
                         e.getPlayer().removeMetadata("HATMETA",getPlug());
 
                     } else {
 
                         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1000000, 1, true));
-                        player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 5.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.CLICK, 5.0f, 0.0f);
                         MessageUtil.sendMessage(player, "Lights ON");
                         e.getPlayer().setMetadata("HATMETA", new FixedMetadataValue(getPlug(), Boolean.TRUE));
 

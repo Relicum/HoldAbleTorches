@@ -24,7 +24,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -35,7 +34,7 @@ import java.util.Arrays;
  */
 public class Torches extends JavaPlugin implements Listener {
 
-    public ArrayList<String> light = new ArrayList<>();
+
     public ItemStack torch;
     public ItemMeta torchMeta;
     public ItemMeta redMeta;

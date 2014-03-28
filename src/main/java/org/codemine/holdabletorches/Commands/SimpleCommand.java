@@ -27,7 +27,7 @@ public abstract class SimpleCommand extends Command implements CmdExecutor,Plugi
     protected int minArgs;
     protected int maxArgs;
 
-    protected SimpleCommand(CommandHandler commandHandler,String name) {
+    public SimpleCommand(CommandHandler commandHandler, String name) {
         super(name);
         
         this.commandHandler = commandHandler;
@@ -58,9 +58,9 @@ public abstract class SimpleCommand extends Command implements CmdExecutor,Plugi
 
         setAliases(Arrays.asList(aliases()));
         setDescription(description());
-        setUsage(commandHandler.PREFIX + commandHandler.USAGE_MESSAGE + usage());
+        setUsage(commandHandler.USAGE_MESSAGE + usage());
         setPermission(permission());
-        setPermissionMessage(commandHandler.PREFIX + commandHandler.NOPERMS_MESSAGE);
+        setPermissionMessage(commandHandler.NOPERMS_MESSAGE);
         playerOnly = playerOnly();
         setMinArgs(minArgs());
         setMaxArgs(maxArgs());
@@ -90,7 +90,7 @@ public abstract class SimpleCommand extends Command implements CmdExecutor,Plugi
         }
 
         if ((playerOnly()) && (!(sender instanceof Player))) {
-            MessageUtil.sendRawMessage(sender, commandHandler.PREFIX + commandHandler.PLAYER_ONLY);
+            MessageUtil.sendMessage(sender, commandHandler.PLAYER_ONLY);
             return true;
         }
 

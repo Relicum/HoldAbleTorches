@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -23,12 +22,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.codemine.holdabletorches.Commands.CommandHandler;
 import org.codemine.holdabletorches.Commands.CommandManager;
+import org.codemine.holdabletorches.Commands.FlashLight;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 import org.codemine.holdabletorches.Utils.RecipeBuilder;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * Name: Torches.java Created: 21 March 2014
@@ -44,6 +44,7 @@ public class Torches extends JavaPlugin implements Listener {
     public CommandManager cm;
     public String[] ironShape;
     public RecipeBuilder goldSight;
+    public CommandHandler commandHandler;
 
     public void onEnable() {
         instance = this;
@@ -53,9 +54,10 @@ public class Torches extends JavaPlugin implements Listener {
         reloadConfig();
 
         MessageUtil.logInfoFormatted("Plugin made by: " + getDescription().getAuthors());
-
+        commandHandler = new CommandHandler(this);
+        commandHandler.registerCommand(new FlashLight(commandHandler, "flashlight"));
         cm = new CommandManager();
-        getCommand("flashlight").setExecutor(cm);
+
         getCommand("goldsight").setExecutor(cm);
         getServer().getPluginManager().registerEvents(this, this);
         applyLightMeta();
@@ -87,7 +89,7 @@ public class Torches extends JavaPlugin implements Listener {
         ironShape=sh.getShape();
         //RecipeBuilder.setLineFormat();
 
-        Iterator<Recipe> recipeList=getServer().recipeIterator();
+/*        Iterator<Recipe> recipeList=getServer().recipeIterator();
         while(recipeList.hasNext()){
             Recipe recipes =recipeList.next();
             if(recipes.getResult().hasItemMeta()){
@@ -95,7 +97,7 @@ public class Torches extends JavaPlugin implements Listener {
                 System.out.println("Recipe: " + recipes.getResult().getItemMeta().getDisplayName());
                 System.out.println("Matrix is " + recipes.getResult());
             }
-        }
+        }*/
 
 
     }

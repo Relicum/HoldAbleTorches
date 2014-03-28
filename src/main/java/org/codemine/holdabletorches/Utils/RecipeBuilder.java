@@ -287,9 +287,9 @@ public class RecipeBuilder {
             tc++;
         }
 
-        for(ItemStack itg: result){
+/*        for(ItemStack itg: result){
             MessageUtil.logServereFormatted("The shape item stack has " + itg.getType());
-        }
+        }*/
 
         this.page.appendNewLine();
 

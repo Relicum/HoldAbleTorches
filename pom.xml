@@ -6,7 +6,7 @@
 
     <groupId>org.codemine.holdabletorches</groupId>
     <artifactId>HoldAbleTorches</artifactId>
-    <version>1.09-BETA</version>
+    <version>1.10-BETA</version>
     <name>HoldAbleTorches</name>
     <packaging>jar</packaging>
 

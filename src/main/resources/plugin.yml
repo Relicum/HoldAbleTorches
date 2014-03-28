@@ -6,10 +6,6 @@ version: ${project.version}
 description: Hold a torch and you will get NightVision
 
 commands:
-  flashlight:
-    description: Get a new HoldAble Torch
-    usage: /flashlight
-    permission: holdabletorches.use
   ironsight:
     description: Display Crafting recipe for Iron Site Torch
     usage: /ironsight
@@ -28,9 +24,6 @@ commands:
     permission: torchemerald.use
 
 permissions:
-    holdabletorches.use:
-        description: allows a player to use the custom Torch to get the effect.
-        default: op
     torchiron.use:
         description: Allows the player to craft the Iron Sight Torch
         default: op

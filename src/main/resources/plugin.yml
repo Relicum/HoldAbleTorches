@@ -1,4 +1,4 @@
-name: Holdable Torches
+name: HoldableTorches
 main: org.codemine.holdabletorches.Torches
 author: Minecraftfailzzz
 authors: [StashCat,webbhead,Relicum]
@@ -14,8 +14,32 @@ commands:
     description: Display Crafting recipe for Iron Site Torch
     usage: /ironsight
     permission: holdabletorches.use
+  goldsight:
+    description: Display Crafting recipe for Gold Site Torch
+    usage: /goldsight
+    permission: torchgold.use
+  diamondsight:
+    description: Display Crafting recipe for Diamond Site Torch
+    usage: /diamondsight
+    permission: torchdiamond.use
+  emeraldsight:
+    description: Display Crafting recipe for Emerald Site Torch
+    usage: /emeraldsight
+    permission: torchemerald.use
 
 permissions:
     holdabletorches.use:
-        description: allows a player to use the torches to get the effect.
+        description: allows a player to use the custom Torch to get the effect.
+        default: op
+    torchiron.use:
+        description: Allows the player to craft the Iron Sight Torch
+        default: op
+    torchgold.use:
+        description: Allows the player to craft the Gold Sight Torch
+        default: op
+    torchdiamond.use:
+        description: Allows the player to craft the Diamond Sight Torch
+        default: op
+    torchemerald.use:
+        description: Allows the player to craft the Emerald Sight Torch
         default: op

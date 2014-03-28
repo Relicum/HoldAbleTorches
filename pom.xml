@@ -6,7 +6,7 @@
 
     <groupId>org.codemine.holdabletorches</groupId>
     <artifactId>HoldAbleTorches</artifactId>
-    <version>1.06-BETA</version>
+    <version>1.08-BETA</version>
     <name>HoldAbleTorches</name>
     <packaging>jar</packaging>
 
@@ -62,15 +62,16 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.2-R0.3</version>
+            <version>1.7.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
+            <id>repobo-snap</id>
+            <name>repo.bukkit.org Snapshots</name>
+            <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 

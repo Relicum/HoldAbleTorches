@@ -1,6 +1,5 @@
 package org.codemine.holdabletorches.Commands;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.codemine.holdabletorches.Torches;
 import org.codemine.holdabletorches.Utils.MessageUtil;
+import org.codemine.holdabletorches.Utils.RecipeBuilder;
 
 /**
  * Name: CommandManager.java Created: 22 March 2014
@@ -55,34 +55,46 @@ public class CommandManager implements CommandExecutor {
             StrBuilder sb = new StrBuilder();
             sb.setNewLineText("\n");
 
-            sb.append(StringUtils.center(ChatColor.GREEN + "-------------------------", 60)).appendNewLine();
-            sb.append(StringUtils.center("&6| Iron Sights Crafting Recipe |", 64)).appendNewLine();
-            sb.append(StringUtils.center(ChatColor.GREEN + "-------------------------", 60)).appendNewLine();
+            sb.append(ChatColor.GREEN + "-------------------------").appendNewLine();
+            sb.append("&6]- Iron Sights Crafting Recipe -[").appendNewLine();
             sb.appendNewLine();
+            String lin = "";
+            for (String lins : Torches.getInstance().ironShape) {
 
-            for(String lin: Torches.getInstance().ironShape){
-
-                lin =ChatColor.LIGHT_PURPLE + lin.replace(" ","X") + ChatColor.RESET;
-                sb.append(StringUtils.center(lin, 70)).appendNewLine();
+                lin = lins.replace(" ", "X");
+                //sb.append(String.format(RecipeBuilder.lineFormat, lin.charAt(0), lin.charAt(1), lin.charAt(2))).appendNewLine();
             }
-
-
-            sb.append(StringUtils.center(ChatColor.GREEN + "-------------------------", 60)).appendNewLine();
-            sb.append(StringUtils.center("&6| Iron Sights Material Key |", 64)).appendNewLine();
             sb.appendNewLine();
+           /* sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();
+            sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();
+            sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();
+            sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();*/
 
-            String[] blank = new String[40];
-            for (int i = 0; i < 40; i++) {
+            String[] blank = new String[10];
+            for (int i = 0; i < 10; i++) {
                 blank[i] = "";
             }
+
+
             sender.sendMessage(blank);
             sender.sendMessage("\n");
-            String view = ChatColor.translateAlternateColorCodes('&', sb.toString());
-            MessageUtil.sendRawMessage(sender, view.split("\\n"));
-
+            //String view = ChatColor.translateAlternateColorCodes('&', sb.toString());
+           // MessageUtil.sendRawMessage(sender, view.split("\\n"));
+            MessageUtil.sendRawMessage(sender, RecipeBuilder.getInstance().getShape());
 
 
             return true;
+
+        }
+        if (command.getName().equalsIgnoreCase("goldsight")) {
+            if (!(sender instanceof Player)) {
+                MessageUtil.sendErrorMessage(sender, "You can only run this from in game");
+                return true;
+            }
+
+            if(Torches.getInstance().goldSight.getBuilder().beenBuilt()){
+                MessageUtil.sendRawMessage(sender,Torches.getInstance().goldSight.getShape());
+            }
 
         }
         return false;

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,18 +15,20 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Utils.MessageUtil;
+import org.codemine.holdabletorches.Utils.RecipeBuilder;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Name: Torches.java Created: 21 March 2014
@@ -40,45 +41,70 @@ public class Torches extends JavaPlugin implements Listener {
     public static Torches instance;
     public ItemStack torch;
     public ItemMeta torchMeta;
-    public ItemMeta redMeta;
     public CommandManager cm;
     public String[] ironShape;
+    public RecipeBuilder goldSight;
+
     public void onEnable() {
         instance = this;
-        PluginDescriptionFile pdf = getDescription();
-        MessageUtil.logInfoFormatted("Plugin made by: " + pdf.getAuthors());
-        cm=new CommandManager();
+
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
+        reloadConfig();
+
+        MessageUtil.logInfoFormatted("Plugin made by: " + getDescription().getAuthors());
+
+        cm = new CommandManager();
         getCommand("flashlight").setExecutor(cm);
-        getCommand("ironsight").setExecutor(cm);
+        getCommand("goldsight").setExecutor(cm);
         getServer().getPluginManager().registerEvents(this, this);
         applyLightMeta();
         this.torch = new ItemStack(Material.TORCH, 1);
         this.torch.setItemMeta(this.torchMeta);
 
+        this.goldSight = new RecipeBuilder(Material.REDSTONE_TORCH_ON)
+                .getBuilder()
+                .setEmptyChar('X')
+                .setItemDisplayName("&6GoldSight")
+                .setTopRow(" J ")
+                .setMiddleRow(" H ")
+                .setBottomRow(" R ")
+                .setIngredient('J', Material.GOLD_INGOT)
+                .setIngredient('H', Material.REDSTONE)
+                .setIngredient('R', Material.STICK);
+        this.goldSight.Build(true,true);
 
-        //Make Iron Sight- Custom craftable Redstone touch
-        ItemMeta Imeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_TORCH_ON);
-        ItemStack iron = new ItemStack(Material.REDSTONE_TORCH_ON,1);
-        Imeta.setDisplayName(ChatColor.GOLD + "Iron Sight");
-        Imeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Iron Sight HoldAble Torch",ChatColor.GREEN + "Hold the torch and right click to power on","",ChatColor.GOLD + "Gives you 10 seconds of light",ChatColor.GOLD + "But only while you hold it"));
-        Imeta.addEnchant(Enchantment.DURABILITY,10,true);
-        iron.setItemMeta(Imeta);
-        ShapedRecipe sh = new ShapedRecipe(iron);
-        sh.shape(" I ", " T ", " S ").setIngredient('I',Material.IRON_INGOT).setIngredient('T',Material.REDSTONE).setIngredient('S',Material.STICK);
+
+        ShapedRecipe sh = new ShapedRecipe(torch);
+        sh.shape(" N ", " R ", " S ").setIngredient('N',Material.IRON_INGOT).setIngredient('R',Material.REDSTONE).setIngredient('S',Material.STICK);
         if(getServer().addRecipe(sh)){
-            MessageUtil.logInfoFormatted("New Recipe For : " + sh.getResult().getType());
+            MessageUtil.logInfoFormatted("New Recipe For : " + sh.getResult().getType() + "\n" + Arrays.toString(sh.getShape()));
+
         }else{
             MessageUtil.logServereFormatted("Unable to create new recipe");
         }
 
         ironShape=sh.getShape();
+        //RecipeBuilder.setLineFormat();
+
+        Iterator<Recipe> recipeList=getServer().recipeIterator();
+        while(recipeList.hasNext()){
+            Recipe recipes =recipeList.next();
+            if(recipes.getResult().hasItemMeta()){
+
+                System.out.println("Recipe: " + recipes.getResult().getItemMeta().getDisplayName());
+                System.out.println("Matrix is " + recipes.getResult());
+            }
+        }
+
+
     }
 
     public void onDisable() {
-       getServer().clearRecipes();
+        getServer().clearRecipes();
     }
 
-    public static Torches getInstance(){
+    public static Torches getInstance() {
         return instance;
     }
 
@@ -91,7 +117,7 @@ public class Torches extends JavaPlugin implements Listener {
 
 
     public void pj(PlayerJoinEvent e) {
-        e.getPlayer().getInventory().setItem(0, this.torch.clone());
+
 
 
     }
@@ -110,6 +136,9 @@ public class Torches extends JavaPlugin implements Listener {
 
         if (!(e.getAction() == Action.RIGHT_CLICK_AIR) && !(e.getAction() == Action.RIGHT_CLICK_BLOCK))
             return; //If action was not right click air do nothing
+
+        if(e.getItem() == null)
+            return;
 
         if (!e.getMaterial().isBlock()) return; //if the item in hand is not of block type do nothing
 
@@ -136,14 +165,14 @@ public class Torches extends JavaPlugin implements Listener {
                         player.removePotionEffect(PotionEffectType.NIGHT_VISION);
                         player.playSound(player.getLocation(), Sound.CLICK, 5.0f, 1.0f);
                         MessageUtil.sendMessage(player, "Lights OUT");
-                        e.getPlayer().removeMetadata("HATMETA",getPlug());
+                        player.removeMetadata("HATMETA", getPlug());
 
                     } else {
 
                         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1000000, 1, true));
                         player.playSound(player.getLocation(), Sound.CLICK, 5.0f, 0.0f);
                         MessageUtil.sendMessage(player, "Lights ON");
-                        e.getPlayer().setMetadata("HATMETA", new FixedMetadataValue(getPlug(), Boolean.TRUE));
+                        player.setMetadata("HATMETA", new FixedMetadataValue(getPlug(), Boolean.TRUE));
 
 
                     }
@@ -156,18 +185,17 @@ public class Torches extends JavaPlugin implements Listener {
     @EventHandler
     public void pH(PlayerItemHeldEvent e) {
         if (!e.getPlayer().hasMetadata("HATMETA")) return;
-
-            e.getPlayer().removePotionEffect(PotionEffectType.NIGHT_VISION);
-            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CLICK, 5.0f, 1.0f);
-            e.getPlayer().removeMetadata("HATMETA",getPlug());
-            MessageUtil.sendMessage(e.getPlayer(), "Lights AUTO OFF");
+        e.getPlayer().removePotionEffect(PotionEffectType.NIGHT_VISION);
+        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CLICK, 5.0f, 1.0f);
+        e.getPlayer().removeMetadata("HATMETA", getPlug());
+        MessageUtil.sendMessage(e.getPlayer(), "Lights AUTO OFF");
     }
 
     private void applyLightMeta() {
         this.torchMeta = Bukkit.getItemFactory().getItemMeta(Material.TORCH);
         this.torchMeta.setDisplayName(ChatColor.GOLD + "HoldAble Torch");
         this.torchMeta.setLore(Arrays.asList(ChatColor.GREEN + "Keep this Torch in your hand to have constant visibility", ChatColor.YELLOW + "Remove it from your hand and the lights go out"));
-        this.redMeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_TORCH_ON);
+        //this.redMeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_TORCH_ON);
 
 
     }

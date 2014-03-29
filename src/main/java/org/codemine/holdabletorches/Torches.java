@@ -12,10 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,13 +25,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.codemine.holdabletorches.Commands.CommandHandler;
 import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Commands.FlashLight;
+import org.codemine.holdabletorches.Commands.SightViewer;
+import org.codemine.holdabletorches.Listeners.PlayerDeath;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 import org.codemine.holdabletorches.Utils.RecipeBuilder;
 import org.codemine.holdabletorches.Utils.RecipeManager;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Name: Torches.java Created: 21 March 2014
@@ -53,10 +50,11 @@ public class Torches extends JavaPlugin implements Listener {
     public CommandHandler commandHandler;
     public ShapedRecipe sh;
     public RecipeManager recipeManager;
+    public List<ItemStack> customItems = new ArrayList<>();
 
     public void onEnable() {
         instance = this;
-
+        getServer().getPluginManager().registerEvents(this, this);
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
@@ -67,16 +65,15 @@ public class Torches extends JavaPlugin implements Listener {
         cm = new CommandManager();
 
         getCommand("goldsight").setExecutor(cm);
-        getServer().getPluginManager().registerEvents(this, this);
+
         applyLightMeta();
         this.torch = new ItemStack(Material.TORCH, 1);
         this.torch.setItemMeta(this.torchMeta);
-
         this.goldSight = recipeManager.getRecipeBuilder(Material.REDSTONE_TORCH_ON)
                 .getBuilder()
                 .setEmptyChar('X')
                 .setItemDisplayName("&6GoldSight")
-                .setItemLore(Arrays.asList("&4Hello there", "this is the 2nd", "this &cis the third", ""))
+                .setItemLore(Arrays.asList("&6GoldSight Gives 20 seconds on night vision", "", "&aHold the item and right click to turn on", "", "&cTime left: 20"))
                 .setTopRow(" J ")
                 .setMiddleRow(" H ")
                 .setBottomRow(" R ")
@@ -101,6 +98,8 @@ public class Torches extends JavaPlugin implements Listener {
 
         sh = new ShapedRecipe(torch);
         sh.shape(" N ", " R ", " S ").setIngredient('N', Material.IRON_INGOT).setIngredient('R', Material.REDSTONE).setIngredient('S', Material.STICK);
+
+
         if (getServer().addRecipe(sh)) {
             MessageUtil.logInfoFormatted("New Recipe For : " + sh.getResult().getType() + "\n" + Arrays.toString(sh.getShape()));
 
@@ -108,7 +107,8 @@ public class Torches extends JavaPlugin implements Listener {
             MessageUtil.logServereFormatted("Unable to create new recipe");
         }
 
-
+        commandHandler.registerCommand(new SightViewer(commandHandler, "torchviewer", recipeManager.getValidNames()));
+        recipeManager.addRecipeName(torchMeta.getDisplayName());
         Iterator<Permission> per = getServer().getPluginManager().getPermissions().iterator();
         while (per.hasNext()) {
             Permission p = per.next();
@@ -119,6 +119,12 @@ public class Torches extends JavaPlugin implements Listener {
                 System.out.println("Child perms found = " + map.keySet().toString());
             }
         }
+
+        getServer().getPluginManager().registerEvents(new PlayerDeath(Arrays.asList(torch, ironSight.getResult())), this);
+        customItems.add(torch);
+        customItems.add(ironSight.getResult());
+        customItems.add(goldSight.getResult());
+        System.out.println(recipeManager.getValidNames().toString());
 
         //RecipeBuilder.setLineFormat();
 
@@ -198,36 +204,21 @@ public class Torches extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void bp(BlockPlaceEvent e) {
-        if (e.getItemInHand().getType().equals(Material.TORCH) && e.getItemInHand().getItemMeta().hasDisplayName() && ChatColor.stripColor(e.getItemInHand().getItemMeta().getDisplayName()).equalsIgnoreCase("HoldAble Torch")) {
+        if (customItems.contains(e.getItemInHand())) {
             e.setCancelled(true);
-
         }
     }
 
     @SuppressWarnings("all")
     @EventHandler(priority = EventPriority.LOW)
     public void onHold(final PlayerInteractEvent e) {
-
         if (!(e.getAction() == Action.RIGHT_CLICK_AIR) && !(e.getAction() == Action.RIGHT_CLICK_BLOCK))
             return; //If action was not right click air do nothing
-
-        if (e.getItem() == null)
+        if (!customItems.contains(e.getItem())) {
             return;
-
-        if (!e.getMaterial().isBlock()) return; //if the item in hand is not of block type do nothing
+        }
 
         final Player player = e.getPlayer();
-
-        if (!e.getMaterial().equals(Material.TORCH) && !e.getMaterial().equals(Material.REDSTONE_TORCH_ON)) {
-            return;
-        }
-
-        if (!e.getMaterial().equals(Material.TORCH) || !e.getMaterial().equals(Material.REDSTONE_TORCH_ON) && (!e.getItem().getItemMeta().hasDisplayName() || !ChatColor.stripColor(e.getItem().getItemMeta().getDisplayName()).equalsIgnoreCase("HoldAble Torch"))) {
-            return;
-        }
-        //If item is not a torch or redstone touch do nothing and it has incorrect Display Name
-
-
         if (!player.hasPermission("holdabletorches.use")) return; //if the player does not have the perm do nothing
 
         if (e.getMaterial().equals(Material.TORCH)) {
@@ -258,6 +249,17 @@ public class Torches extends JavaPlugin implements Listener {
             }, 1l);
 
         }
+        if (e.getMaterial().equals(Material.REDSTONE_TORCH_ON)) {
+            player.updateInventory();
+            List<String> lo = e.getItem().getItemMeta().getLore();
+            String last = ChatColor.stripColor(lo.get(lo.size() - 1));
+            String[] sp = last.split(":");
+            int ti = Integer.parseInt(sp[1].trim()) * 20;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, ti, 1, true));
+            MessageUtil.sendMessage(player, "Time left is " + ti / 20);
+
+
+        }
     }
 
     @EventHandler
@@ -267,6 +269,24 @@ public class Torches extends JavaPlugin implements Listener {
         e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CLICK, 5.0f, 1.0f);
         e.getPlayer().removeMetadata("HATMETA", getPlug());
         MessageUtil.sendMessage(e.getPlayer(), "Lights AUTO OFF");
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void pD(PlayerDropItemEvent e) {
+
+        if (!customItems.contains(e.getItemDrop().getItemStack())) {
+            return;
+        }
+
+        e.setCancelled(true);
+        final Player player = e.getPlayer();
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                player.updateInventory();
+            }
+        }, 1l);
+
     }
 
     private void applyLightMeta() {

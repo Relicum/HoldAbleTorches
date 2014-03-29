@@ -27,9 +27,9 @@ public class RecipeManager {
 
     public void addRecipeName(String name) {
         Validate.notNull(name, "Must pass a name for recipe");
-        if (!isValidName(name)) {
-            names.add(ChatColor.stripColor(name));
-        }
+
+        names.add(ChatColor.stripColor(name));
+
     }
 
     public boolean isValidName(String name) {

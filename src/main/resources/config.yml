@@ -1,4 +1,16 @@
-craftable:
-  torch: true
-  redstonetorch: false
+settings:
+  flashlight:
+    enable: true
+    usepermission: true
+    candrop: false
+    dropondeath: false
+    unlimited: true
+    length: 15
+    cooldown: 5
+  craftable:
+    enable: false
+    ironsight: false
+    goldsight: false
+    diamondsight: false
+    emeraldsight: false
 recipes: []

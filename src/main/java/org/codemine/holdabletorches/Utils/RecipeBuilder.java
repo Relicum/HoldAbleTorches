@@ -348,6 +348,9 @@ public class RecipeBuilder {
         return this.shapedRecipe.getResult();
     }
 
+    public ItemStack getItemStack() {
+        return this.itemStack;
+    }
 
     public Recipe getRecipe() {
         return this.shapedRecipe;

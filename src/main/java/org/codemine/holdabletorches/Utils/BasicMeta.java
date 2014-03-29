@@ -18,8 +18,7 @@ import java.util.Map;
 public class BasicMeta<T> implements IMeta {
 
 
-
-    public BasicMeta(T t){
+    public BasicMeta(T t) {
 
 
     }

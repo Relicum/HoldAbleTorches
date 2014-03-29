@@ -42,11 +42,11 @@ public class RecipeDisplayer implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public RecipeDisplayer(String name,OptionClickEventHandler handler,Plugin plugin,ItemStack[] matrix){
+    public RecipeDisplayer(String name, OptionClickEventHandler handler, Plugin plugin, ItemStack[] matrix) {
         this.name = name;
         this.handler = handler;
         this.plugin = plugin;
-        this.matrix=new ItemStack[9];
+        this.matrix = new ItemStack[9];
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -56,8 +56,9 @@ public class RecipeDisplayer implements Listener {
         optionIcons[position] = setItemNameAndLore(icon, name, info);
         return this;
     }
-    public static RecipeDisplayer setMatrix(String name,ItemStack[] matrix){
-       return null;
+
+    public static RecipeDisplayer setMatrix(String name, ItemStack[] matrix) {
+        return null;
     }
 
     public void opens(Player player) {
@@ -71,17 +72,9 @@ public class RecipeDisplayer implements Listener {
         player.openInventory(inventory);
     }
 
-    public void open(Player player,Recipe recipe){
-        InventoryView inventoryView = player.openWorkbench(null,true);
+    public void open(Player player, Recipe recipe) {
+        InventoryView inventoryView = player.openWorkbench(null, true);
         CraftingInventory inventory = (CraftingInventory) inventoryView.getTopInventory();
-
-
-
-
-
-
-
-
 
 
     }
@@ -116,10 +109,11 @@ public class RecipeDisplayer implements Listener {
                             plugin, new Runnable() {
 
 
-                        public void run() {
-                            p.closeInventory();
-                        }
-                    }, 1);
+                                public void run() {
+                                    p.closeInventory();
+                                }
+                            }, 1
+                    );
                 }
                 if (e.willDestroy()) {
                     destroy();

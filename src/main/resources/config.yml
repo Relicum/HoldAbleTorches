@@ -1,4 +1,6 @@
 settings:
+  general:
+    firstload: true
   flashlight:
     enable: true
     usepermission: true
@@ -14,3 +16,4 @@ settings:
     diamondsight: false
     emeraldsight: false
 recipes: []
+flashlight: []

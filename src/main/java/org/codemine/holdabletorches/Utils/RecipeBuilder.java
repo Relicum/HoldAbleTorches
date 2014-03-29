@@ -275,6 +275,7 @@ public class RecipeBuilder {
 
         this.shapedRecipe = new ShapedRecipe(this.itemStack);
 
+
         this.shapedRecipe.shape(shape);
 
         int c = 0;

@@ -18,9 +18,9 @@ import java.util.List;
  * @author Relicum
  * @version 0.0.1
  */
-public abstract class SimpleCommand extends Command implements CmdExecutor,PluginIdentifiableCommand,CmdInfo {
+public abstract class SimpleCommand extends Command implements CmdExecutor, PluginIdentifiableCommand, CmdInfo {
 
-    
+
     protected CommandHandler commandHandler;
     protected Plugin plugin;
     protected boolean playerOnly;
@@ -29,7 +29,7 @@ public abstract class SimpleCommand extends Command implements CmdExecutor,Plugi
 
     public SimpleCommand(CommandHandler commandHandler, String name) {
         super(name);
-        
+
         this.commandHandler = commandHandler;
 
         if (commandHandler == null) {

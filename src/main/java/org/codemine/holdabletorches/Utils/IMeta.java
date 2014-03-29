@@ -19,20 +19,20 @@ import java.util.Map;
 public interface IMeta<T> {
 
 
-    public ItemStack stack=null;
-    public ItemMeta meta=null;
+    public ItemStack stack = null;
+    public ItemMeta meta = null;
     public Material material = null;
     public String displayName = null;
     public List<EnchantmentWrapper> enchantmentWrappers = null;
     public List<String> loreList = null;
 
-    public static char EMPTY='\n';
+    public static char EMPTY = '\n';
 
-    public String heading=null;
-    public char nl='\n';
-    public String[] rows=new String[3];
-    public Enchantment enchant=null;
-    public int enchantLevel=0;
+    public String heading = null;
+    public char nl = '\n';
+    public String[] rows = new String[3];
+    public Enchantment enchant = null;
+    public int enchantLevel = 0;
     public boolean allowUnsafe = true;
 
     //HEADING
@@ -52,7 +52,7 @@ public interface IMeta<T> {
 
     public boolean addEnchant(Enchantment enchantment, int level);
 
-    public boolean addUnSafeEnchant(Enchantment enchantment, int level,boolean forceEnchant);
+    public boolean addUnSafeEnchant(Enchantment enchantment, int level, boolean forceEnchant);
 
     public void setDisplayName(String name);
 
@@ -62,14 +62,15 @@ public interface IMeta<T> {
 
     public ItemMeta getItemMeta(Material mat);
 
-    public ItemStack getItemStack(Material mat,int amount);
+    public ItemStack getItemStack(Material mat, int amount);
 
-    public ItemStack getItemStack(MaterialData data,int amount);
+    public ItemStack getItemStack(MaterialData data, int amount);
 
     public ItemStack setItemMeta(ItemMeta itemMeta);
+
     public <T> T setType(T t);
 
     public T getType();
 
-    public Map<String,Object> serialize();
+    public Map<String, Object> serialize();
 }

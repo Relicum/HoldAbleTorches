@@ -1,11 +1,11 @@
 package org.codemine.holdabletorches.Utils;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * Name: MessageUtil.java Created: 12 March 2014
@@ -27,7 +27,7 @@ public class MessageUtil implements consolColors {
     private static final String errorColor = "&c";
     private static final String adminColor = "&5";
 
-    private static final String logPrefix= WHITE + "[" + BOLDGREEN+ "Holdable_Torches" + WHITE + "] ";
+    private static final String logPrefix = WHITE + "[" + BOLDGREEN + "Holdable_Torches" + WHITE + "] ";
     private static final String logInfoColor = BOLDYELLOW;
     private static final String logSevereColor = BOLDRED;
     private static final String logWarningColor = BOLDMAGENTA;

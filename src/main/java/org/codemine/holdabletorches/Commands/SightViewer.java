@@ -6,7 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.StringUtil;
+import org.codemine.holdabletorches.Runnables.OpenView;
 import org.codemine.holdabletorches.Torches;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
@@ -48,15 +50,17 @@ public class SightViewer extends SimpleCommand {
      */
     @Override
     public boolean onCommand(CommandSender sender, String command, String[] args) {
-        final Player player = (Player) sender;
+        Player player = (Player) sender;
         ItemStack[] matrix;
 
         switch (args[0].toLowerCase()) {
             case "ironsight":
                 matrix = Torches.getInstance().ironSight.getMatrix();
+                player.setMetadata("MENUOPEN", new FixedMetadataValue(Torches.getInstance(), Boolean.TRUE));
                 break;
             case "goldsight":
                 matrix = Torches.getInstance().goldSight.getMatrix();
+                player.setMetadata("MENUOPEN", new FixedMetadataValue(Torches.getInstance(), Boolean.TRUE));
                 break;
             default:
                 MessageUtil.sendErrorMessage(player, "Invalid Recipe");
@@ -65,13 +69,15 @@ public class SightViewer extends SimpleCommand {
 
         InventoryView inventoryView = player.openWorkbench(null, true);
 
-        final CraftingInventory inventory = (CraftingInventory) inventoryView.getTopInventory();
+        CraftingInventory inventory = (CraftingInventory) inventoryView.getTopInventory();
         inventory.setMatrix(matrix);
 
 
         sender.sendMessage("You have selected " + args[0]);
+        int task = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Torches.getInstance(), new OpenView(player, inventory), 100l);
+        player.setMetadata("MENUOPENID", new FixedMetadataValue(Torches.getInstance(), task));
 
-        Bukkit.getScheduler().runTaskLater(Torches.getInstance(), new Runnable() {
+/*        Bukkit.getScheduler().runTaskLater(Torches.getInstance(), new Runnable() {
             @Override
             public void run() {
 
@@ -79,7 +85,7 @@ public class SightViewer extends SimpleCommand {
                 player.closeInventory();
 
             }
-        }, 100l);
+        }, 100l);*/
 
         return true;
     }

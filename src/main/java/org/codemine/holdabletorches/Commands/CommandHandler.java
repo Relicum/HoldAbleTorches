@@ -2,6 +2,8 @@ package org.codemine.holdabletorches.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
@@ -42,10 +44,27 @@ public class CommandHandler {
 
     public void registerCommand(SimpleCommand command) {
 
+        String[] ps = command.permission().split("\\.");
+        String ubPerm = "";
+        Integer max = ps.length - 1;
+        for (int i = 0; i < max; i++) {
+            ubPerm += ps[i];
+            if (i != max - 1) {
+                ubPerm += ".";
+            }
+        }
+
+        Permission per = new Permission(command.getPermission());
+        per.setDefault(PermissionDefault.OP);
+        per.addParent(ubPerm, true);
+        per.setDescription(command.getDescription());
+        getPlugin().getServer().getPluginManager().addPermission(per);
+        MessageUtil.logInfoFormatted("Permission registered: " + per.getName());
 
         scmp.register("", command);
         MessageUtil.logInfoFormatted("Command registered: " + command.getName());
         cmdList.add(command);
+
     }
 
     public void registerCommands(List<SimpleCommand> commands) {

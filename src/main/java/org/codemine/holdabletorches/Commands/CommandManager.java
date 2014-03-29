@@ -59,11 +59,7 @@ public class CommandManager implements CommandExecutor {
             sb.append("&6]- Iron Sights Crafting Recipe -[").appendNewLine();
             sb.appendNewLine();
             String lin = "";
-            for (String lins : Torches.getInstance().ironShape) {
 
-                lin = lins.replace(" ", "X");
-                //sb.append(String.format(RecipeBuilder.lineFormat, lin.charAt(0), lin.charAt(1), lin.charAt(2))).appendNewLine();
-            }
             sb.appendNewLine();
            /* sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();
             sb.append(RecipeBuilder.formatIngredientLine()).appendNewLine();
@@ -79,7 +75,7 @@ public class CommandManager implements CommandExecutor {
             sender.sendMessage(blank);
             sender.sendMessage("\n");
             //String view = ChatColor.translateAlternateColorCodes('&', sb.toString());
-           // MessageUtil.sendRawMessage(sender, view.split("\\n"));
+            // MessageUtil.sendRawMessage(sender, view.split("\\n"));
             MessageUtil.sendRawMessage(sender, RecipeBuilder.getInstance().getShape());
 
 
@@ -92,8 +88,8 @@ public class CommandManager implements CommandExecutor {
                 return true;
             }
 
-            if(Torches.getInstance().goldSight.getBuilder().beenBuilt()){
-                MessageUtil.sendRawMessage(sender,Torches.getInstance().goldSight.getShape());
+            if (Torches.getInstance().goldSight.getBuilder().beenBuilt()) {
+                MessageUtil.sendRawMessage(sender, Torches.getInstance().goldSight.getShape());
             }
 
         }

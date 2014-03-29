@@ -10,6 +10,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -27,8 +30,11 @@ import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Commands.FlashLight;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 import org.codemine.holdabletorches.Utils.RecipeBuilder;
+import org.codemine.holdabletorches.Utils.RecipeManager;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Name: Torches.java Created: 21 March 2014
@@ -42,9 +48,11 @@ public class Torches extends JavaPlugin implements Listener {
     public ItemStack torch;
     public ItemMeta torchMeta;
     public CommandManager cm;
-    public String[] ironShape;
+    public RecipeBuilder ironSight;
     public RecipeBuilder goldSight;
     public CommandHandler commandHandler;
+    public ShapedRecipe sh;
+    public RecipeManager recipeManager;
 
     public void onEnable() {
         instance = this;
@@ -52,7 +60,7 @@ public class Torches extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
-
+        recipeManager = new RecipeManager();
         MessageUtil.logInfoFormatted("Plugin made by: " + getDescription().getAuthors());
         commandHandler = new CommandHandler(this);
         commandHandler.registerCommand(new FlashLight(commandHandler, "flashlight"));
@@ -64,29 +72,54 @@ public class Torches extends JavaPlugin implements Listener {
         this.torch = new ItemStack(Material.TORCH, 1);
         this.torch.setItemMeta(this.torchMeta);
 
-        this.goldSight = new RecipeBuilder(Material.REDSTONE_TORCH_ON)
+        this.goldSight = recipeManager.getRecipeBuilder(Material.REDSTONE_TORCH_ON)
                 .getBuilder()
                 .setEmptyChar('X')
                 .setItemDisplayName("&6GoldSight")
+                .setItemLore(Arrays.asList("&4Hello there", "this is the 2nd", "this &cis the third", ""))
                 .setTopRow(" J ")
                 .setMiddleRow(" H ")
                 .setBottomRow(" R ")
                 .setIngredient('J', Material.GOLD_INGOT)
                 .setIngredient('H', Material.REDSTONE)
                 .setIngredient('R', Material.STICK);
-        this.goldSight.Build(true,true);
+        this.goldSight.Build(true, true);
 
 
-        ShapedRecipe sh = new ShapedRecipe(torch);
-        sh.shape(" N ", " R ", " S ").setIngredient('N',Material.IRON_INGOT).setIngredient('R',Material.REDSTONE).setIngredient('S',Material.STICK);
-        if(getServer().addRecipe(sh)){
+        this.ironSight = recipeManager.getRecipeBuilder(Material.REDSTONE_TORCH_ON)
+                .getBuilder()
+                .setEmptyChar('X')
+                .setItemDisplayName("&6IronSight")
+                .setItemLore(Arrays.asList("&6IronSight Gives 10 seconds on night vision", "", "&aHold the item and right click to turn on", "", "&cTime left: 10"))
+                .setTopRow(" I ")
+                .setMiddleRow(" L ")
+                .setBottomRow(" P ")
+                .setIngredient('I', Material.IRON_INGOT)
+                .setIngredient('L', Material.REDSTONE)
+                .setIngredient('P', Material.STICK);
+        this.ironSight.Build(true, true);
+
+        sh = new ShapedRecipe(torch);
+        sh.shape(" N ", " R ", " S ").setIngredient('N', Material.IRON_INGOT).setIngredient('R', Material.REDSTONE).setIngredient('S', Material.STICK);
+        if (getServer().addRecipe(sh)) {
             MessageUtil.logInfoFormatted("New Recipe For : " + sh.getResult().getType() + "\n" + Arrays.toString(sh.getShape()));
 
-        }else{
+        } else {
             MessageUtil.logServereFormatted("Unable to create new recipe");
         }
 
-        ironShape=sh.getShape();
+
+        Iterator<Permission> per = getServer().getPluginManager().getPermissions().iterator();
+        while (per.hasNext()) {
+            Permission p = per.next();
+            System.out.println("Permission name: " + p.getName());
+
+            Map<String, Boolean> map = p.getChildren();
+            if (map.size() != 0) {
+                System.out.println("Child perms found = " + map.keySet().toString());
+            }
+        }
+
         //RecipeBuilder.setLineFormat();
 
 /*        Iterator<Recipe> recipeList=getServer().recipeIterator();
@@ -117,11 +150,50 @@ public class Torches extends JavaPlugin implements Listener {
         }
     }
 
-
+    @EventHandler
     public void pj(PlayerJoinEvent e) {
 
 
+    }
 
+    @EventHandler
+    public void invCraft(CraftItemEvent e) {
+
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Player player = (Player) e.getWhoClicked();
+        if (e.getSlotType().equals(InventoryType.SlotType.CRAFTING)) {
+            MessageUtil.sendMessage(player, "Not Crafting");
+            return;
+        }
+        if (!e.getCurrentItem().hasItemMeta()) return;
+        if (!e.getCurrentItem().getItemMeta().hasDisplayName()) return;
+
+
+        String item = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
+
+        if (recipeManager.isValidName(item)) {
+
+            switch (item.toLowerCase()) {
+                case "ironsight":
+                    if (!player.hasPermission("torchiron.use")) {
+                        e.setCancelled(true);
+                        MessageUtil.sendMessage(player, "No perms");
+                    }
+                    break;
+                case "goldsight":
+                    if (!player.hasPermission("torchgold.use")) {
+                        e.setCancelled(true);
+                        MessageUtil.sendMessage(player, "No perms");
+                    }
+                    break;
+                default:
+                    return;
+
+
+            }
+
+
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -139,12 +211,16 @@ public class Torches extends JavaPlugin implements Listener {
         if (!(e.getAction() == Action.RIGHT_CLICK_AIR) && !(e.getAction() == Action.RIGHT_CLICK_BLOCK))
             return; //If action was not right click air do nothing
 
-        if(e.getItem() == null)
+        if (e.getItem() == null)
             return;
 
         if (!e.getMaterial().isBlock()) return; //if the item in hand is not of block type do nothing
 
         final Player player = e.getPlayer();
+
+        if (!e.getMaterial().equals(Material.TORCH) && !e.getMaterial().equals(Material.REDSTONE_TORCH_ON)) {
+            return;
+        }
 
         if (!e.getMaterial().equals(Material.TORCH) || !e.getMaterial().equals(Material.REDSTONE_TORCH_ON) && (!e.getItem().getItemMeta().hasDisplayName() || !ChatColor.stripColor(e.getItem().getItemMeta().getDisplayName()).equalsIgnoreCase("HoldAble Torch"))) {
             return;

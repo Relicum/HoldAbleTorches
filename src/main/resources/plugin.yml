@@ -9,7 +9,7 @@ commands:
   ironsight:
     description: Display Crafting recipe for Iron Site Torch
     usage: /ironsight
-    permission: holdabletorches.use
+    permission: torchiron.use
   goldsight:
     description: Display Crafting recipe for Gold Site Torch
     usage: /goldsight

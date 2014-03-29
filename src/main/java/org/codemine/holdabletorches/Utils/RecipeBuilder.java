@@ -8,11 +8,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.codemine.holdabletorches.Torches;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Name: RecipeBuilder.java Created: 22 March 2014
@@ -40,6 +44,7 @@ public class RecipeBuilder {
     private ShapedRecipe shapedRecipe;
     private String disPlayName;
     private List<String> lore;
+    private boolean hasLore = false;
     private Map<Character, Material> ingredients = new HashMap<>();
     private Map<String, Enchantment> enchantmentMap = new HashMap<>();
     public ItemStack[] result = new ItemStack[9];
@@ -98,8 +103,8 @@ public class RecipeBuilder {
         Validate.isTrue(first.length() == 3);
 
         this.shape[0] = first;
-        for(int i=0;i<3;i++){
-            this.keys.add(i,first.charAt(i));
+        for (int i = 0; i < 3; i++) {
+            this.keys.add(i, first.charAt(i));
         }
 
         this.topRow = true;
@@ -116,8 +121,8 @@ public class RecipeBuilder {
         Validate.isTrue(middleRow.length() == 3);
 
         this.shape[1] = middleRow;
-        for(int i=0;i<3;i++){
-            this.keys.add(i+3,middleRow.charAt(i));
+        for (int i = 0; i < 3; i++) {
+            this.keys.add(i + 3, middleRow.charAt(i));
         }
         this.middleRow = true;
         return this;
@@ -133,8 +138,8 @@ public class RecipeBuilder {
     public RecipeBuilder setBottomRow(String bottomRow) {
         Validate.isTrue(bottomRow.length() == 3);
         this.shape[2] = bottomRow;
-        for(int i=0;i<3;i++){
-            this.keys.add(i+6,bottomRow.charAt(i));
+        for (int i = 0; i < 3; i++) {
+            this.keys.add(i + 6, bottomRow.charAt(i));
         }
         this.bottomRow = true;
         return this;
@@ -210,15 +215,12 @@ public class RecipeBuilder {
      */
     public RecipeBuilder setItemLore(List<String> lore) {
         Validate.notEmpty(lore, "Lore can't be empty");
-
-        ListIterator<String> listIterator = lore.listIterator();
-
-        int c = 0;
-        while (listIterator.hasNext()) {
-            this.keyLineFormat[c] = addColor(listIterator.next());
-            c++;
+        this.lore = new ArrayList<>(lore.size());
+        for (Integer c = 0; c < lore.size(); c++) {
+            this.lore.add(c, addColor(lore.get(c)));
+            System.out.println("Lore " + c + " is " + lore.get(c));
         }
-
+        this.hasLore = true;
         return this;
 
     }
@@ -258,13 +260,16 @@ public class RecipeBuilder {
         Validate.notNull(this.material, "Material can not be null");
         Validate.notNull(register, "Build arg must not be null");
 
-        for(int i=0;i<9;i++){
+        for (int i = 0; i < 9; i++) {
 
-            result[i]=new ItemStack(Material.AIR);
+            result[i] = new ItemStack(Material.AIR);
         }
         this.itemStack = new ItemStack(this.material, 1);
         this.itemMeta = Bukkit.getItemFactory().getItemMeta(this.material);
         this.itemMeta.setDisplayName(this.disPlayName);
+
+        if (this.hasLore)
+            this.itemMeta.setLore(this.lore);
 
         this.itemStack.setItemMeta(this.itemMeta);
 
@@ -281,15 +286,11 @@ public class RecipeBuilder {
         }
 
 
-        int tc=0;
-        for(Character ch: keys){
+        int tc = 0;
+        for (Character ch : keys) {
             result[tc] = mapIngredientToKey(ch);
             tc++;
         }
-
-/*        for(ItemStack itg: result){
-            MessageUtil.logServereFormatted("The shape item stack has " + itg.getType());
-        }*/
 
         this.page.appendNewLine();
 
@@ -302,11 +303,11 @@ public class RecipeBuilder {
             this.registerRecipe();
         }
 
-        saveMatrix(result,ChatColor.stripColor(disPlayName));
-
-       // System.out.println(this.shapedRecipe.getResult());
-       // System.out.println(Arrays.toString(this.shapedRecipe.getShape()));
-      //  System.out.println(Arrays.toString(result));
+        saveMatrix(result, ChatColor.stripColor(disPlayName));
+        Torches.getInstance().recipeManager.addRecipeName(disPlayName);
+        System.out.println(this.shapedRecipe.getResult());
+        // System.out.println(Arrays.toString(this.shapedRecipe.getShape()));
+        //  System.out.println(Arrays.toString(result));
     }
 
     /**
@@ -324,19 +325,18 @@ public class RecipeBuilder {
 
     }
 
-    public void saveMatrix(ItemStack[] stacks,String name){
-       if(!Torches.getInstance().getConfig().contains("recipes." + name)){
-          Torches.getInstance().getConfig().set("recipes." + name,stacks);
-           Torches.getInstance().saveConfig();
-       }
-
+    public void saveMatrix(ItemStack[] stacks, String name) {
+        if (!Torches.getInstance().getConfig().contains("recipes." + name)) {
+            Torches.getInstance().getConfig().set("recipes." + name, stacks);
+            Torches.getInstance().saveConfig();
+        }
 
 
     }
 
-    private ItemStack mapIngredientToKey(Character character){
+    private ItemStack mapIngredientToKey(Character character) {
 
-        if(ingredients.containsKey(character)){
+        if (ingredients.containsKey(character)) {
             return new ItemStack(ingredients.get(character));
         }
 
@@ -344,6 +344,18 @@ public class RecipeBuilder {
 
     }
 
+    public ItemStack getResult() {
+        return this.shapedRecipe.getResult();
+    }
+
+
+    public Recipe getRecipe() {
+        return this.shapedRecipe;
+    }
+
+    public ItemStack[] getMatrix() {
+        return this.result;
+    }
 
     private String generateRecipeTitle() {
 

@@ -59,8 +59,11 @@ public class FlashLight extends SimpleCommand {
 
             }
         }
-
+        // Item item = (Item) Torches.getInstance().torch.clone();
+        //int id = item.getEntityId();
+        // System.out.println("Id of the torch is " + id);
         player.getInventory().setItem(player.getInventory().firstEmpty(), Torches.getInstance().torch.clone());
+        // player.getInventory().setItem(player.getInventory().firstEmpty(),item.getItemStack());
         MessageUtil.sendMessage(player, "To switch on the Torch, hold it in your hand and right click");
         return true;
 

@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,8 @@ import org.codemine.holdabletorches.Commands.FlashLight;
 import org.codemine.holdabletorches.Commands.SightViewer;
 import org.codemine.holdabletorches.Listeners.DropItems;
 import org.codemine.holdabletorches.Listeners.PlayerDeath;
+import org.codemine.holdabletorches.Objects.SerializedCraftSettings;
+import org.codemine.holdabletorches.Objects.SerializedSettings;
 import org.codemine.holdabletorches.Runnables.TorchTimer;
 import org.codemine.holdabletorches.Utils.Enchanter;
 import org.codemine.holdabletorches.Utils.FlashItem;
@@ -85,15 +88,21 @@ public class Torches extends JavaPlugin implements Listener {
     public void onEnable()
     {
 
+        ConfigurationSerialization.registerClass(SerializedCraftSettings.class);
+        ConfigurationSerialization.registerClass(SerializedSettings.class);
+
         instance = this;
         locale = new Locale("en", "GB");
         Locale.setDefault(locale);
 
         saveResource("MessagesBundle.properties", false);
         saveResource("MessagesBundle_en_GB.properties", false);
+        //SerializedCraftSettings si=new SerializedCraftSettings("IronSight",true,true,true,true,true,10);
+        //SerializedCraftSettings sg=new SerializedCraftSettings("GoldSight",true,true,true,true,true,20);
+        //SerializedCraftSettings sd=new SerializedCraftSettings("DiamondSight",true,true,true,true,true,45);
+        //SerializedCraftSettings se=new SerializedCraftSettings("EmeraldSight",true,true,true,true,true,60);
 
         // messages = ResourceBundle.getBundle("MessagesBundle",locale);
-
 
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
@@ -107,7 +116,6 @@ public class Torches extends JavaPlugin implements Listener {
 
         //Register Custom Enchants
         this.enchanter.registerAll();
-        //ItemStack it = new ItemStack(Material.BOOK_AND_QUILL);
 
         flashSettings = getConfig().getConfigurationSection("settings.flashlight").getValues(true);
 
@@ -115,8 +123,14 @@ public class Torches extends JavaPlugin implements Listener {
         {
             this.torch = FlashItem.getFlashLight();
         }
+        SerializedSettings ss = (SerializedSettings) getConfig().get("settings.craftable");
 
-        this.nextId = getConfig().getInt("settings.craftable.id");
+        System.out.println("Serialized is " + ss.toString());
+        //System.out.println("Serialized is " + ss.getGoldSight().toString());
+        // System.out.println("Serialized is " + ss.getDiamondSight().toString());
+        // System.out.println("Serialized is " + ss.getEmeraldSight().toString());
+
+        this.nextId = ss.getId();
 
         recipeManager = new RecipeManager();
         MessageUtil.logInfoFormatted(I18N.STRING("INTERNAL.MADEBY", "relicum") + getDescription().getAuthors());
@@ -234,7 +248,7 @@ public class Torches extends JavaPlugin implements Listener {
     public void pj(final PlayerJoinEvent e)
     {
 
-        e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().firstEmpty(), FlashItem.getFlashLight());
+/*        e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().firstEmpty(), FlashItem.getFlashLight());
         getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 
             @Override
@@ -243,7 +257,7 @@ public class Torches extends JavaPlugin implements Listener {
 
                 e.getPlayer().updateInventory();
             }
-        }, 1l);
+        }, 1l);*/
 
         PotionEffect potionEffect = new PotionEffect(PotionEffectType.JUMP, 200, 5, true);
         potionEffect.apply(e.getPlayer());

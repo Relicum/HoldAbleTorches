@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Name: FlashItem.java Created: 15 April 2014
+ * Super simple and efficient way to get the FlashLight.
  *
  * @author Relicum
  * @version 0.0.1
@@ -33,25 +34,16 @@ public class FlashItem {
         torch.setItemMeta(meta);
     }
 
+    /**
+     * Gets the flashlight as a completed Item Stack
+     *
+     * @return the flash light as {@link org.bukkit.inventory.ItemStack}
+     */
     public static ItemStack getFlashLight()
     {
 
         return torch.clone();
     }
-
-   /* private static ItemStack newTorch(){
-        ItemStack stack = new ItemStack(Material.TORCH);
-        stack.setItemMeta(makeMeta());
-        return stack;
-    }
-
-    private static ItemMeta makeMeta(){
-        ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.TORCH);
-        itemMeta.setDisplayName(displayName);
-        itemMeta.setLore(lore);
-        itemMeta.addEnchant(enchantment,1,true);
-        return itemMeta.clone();
-    }*/
 
     private static String altCol(String s)
     {

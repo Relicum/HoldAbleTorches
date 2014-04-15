@@ -8,36 +8,45 @@ settings:
     candrop: false
     dropondeath: false
   craftable:
-    id: 0
+    ==: SerializedSettings
     enable: true
-    ironsight:
-      enable: true
-      usepermission: false
-      craftpermission: true
-      candrop: true
-      dropondeath: true
-      maxLight: 10
+    id: 1
     goldsight:
-      enable: true
-      usepermission: false
-      craftpermission: true
+      ==: SerializedCraftSettings
+      usepermission: true
       candrop: true
-      dropondeath: true
       maxLight: 20
+      dropondeath: true
+      name: GoldSight
+      enable: true
+      craftpermission: true
+    ironsight:
+      ==: SerializedCraftSettings
+      usepermission: true
+      candrop: true
+      maxLight: 10
+      dropondeath: true
+      name: IronSight
+      enable: true
+      craftpermission: true
     diamondsight:
-      enable: true
-      usepermission: false
-      craftpermission: true
+      ==: SerializedCraftSettings
+      usepermission: true
       candrop: true
-      dropondeath: true
       maxLight: 45
-    emeraldsight:
-      enable: true
-      usepermission: false
-      craftpermission: true
-      candrop: true
       dropondeath: true
+      name: DiamondSight
+      enable: true
+      craftpermission: true
+    emeraldsight:
+      ==: SerializedCraftSettings
+      usepermission: true
+      candrop: true
       maxLight: 60
+      dropondeath: true
+      name: EmeraldSight
+      enable: true
+      craftpermission: true
 flashlight: []
 recipies:
   recipe: []

@@ -113,7 +113,7 @@ public class Torches extends JavaPlugin implements Listener {
 
         if((Boolean) flashSettings.get("enable"))
         {
-            this.torch = getConfig().getItemStack("flashlight");
+            this.torch = FlashItem.getFlashLight();
         }
 
         this.nextId = getConfig().getInt("settings.craftable.id");

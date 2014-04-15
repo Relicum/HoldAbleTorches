@@ -1,19 +1,44 @@
 settings:
   general:
     firstload: true
+    enable: true
   flashlight:
     enable: true
     usepermission: true
     candrop: false
     dropondeath: false
-    unlimited: true
-    length: 15
-    cooldown: 5
   craftable:
-    enable: false
-    ironsight: false
-    goldsight: false
-    diamondsight: false
-    emeraldsight: false
-recipes: []
+    id: 0
+    enable: true
+    ironsight:
+      enable: true
+      usepermission: false
+      craftpermission: true
+      candrop: true
+      dropondeath: true
+      maxLight: 10
+    goldsight:
+      enable: true
+      usepermission: false
+      craftpermission: true
+      candrop: true
+      dropondeath: true
+      maxLight: 20
+    diamondsight:
+      enable: true
+      usepermission: false
+      craftpermission: true
+      candrop: true
+      dropondeath: true
+      maxLight: 45
+    emeraldsight:
+      enable: true
+      usepermission: false
+      craftpermission: true
+      candrop: true
+      dropondeath: true
+      maxLight: 60
 flashlight: []
+recipies:
+  recipe: []
+

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.codemine.holdabletorches.Torches;
+import org.codemine.holdabletorches.Utils.I18N;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class FlashLight extends SimpleCommand {
                 if (itemStack.hasItemMeta()) {
                     if (itemStack.getItemMeta().hasDisplayName()) {
                         if (ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase("HoldAble Torch")) {
-                            MessageUtil.sendErrorMessage(player, "You already have one flash light in your inventory, please use that");
+                            MessageUtil.sendErrorMessage(player, I18N.STRING("FLASHLIGHT.ALREADY.HAS"));
                             return true;
                         }
                     }
@@ -59,12 +60,15 @@ public class FlashLight extends SimpleCommand {
 
             }
         }
-        // Item item = (Item) Torches.getInstance().torch.clone();
-        //int id = item.getEntityId();
-        // System.out.println("Id of the torch is " + id);
+
+        //Item item= Bukkit.getWorlds().get(0).dropItem(player.getLocation(),new ItemStack(Material.TORCH));
+
+        // item.getUniqueId();
+
         player.getInventory().setItem(player.getInventory().firstEmpty(), Torches.getInstance().torch.clone());
         // player.getInventory().setItem(player.getInventory().firstEmpty(),item.getItemStack());
-        MessageUtil.sendMessage(player, "To switch on the Torch, hold it in your hand and right click");
+        MessageUtil.sendMessage(player, I18N.STRING("FLASHLIGHT.LORE.LINE1"));
+        MessageUtil.sendMessage(player, I18N.STRING("FLASHLIGHT.LORE.LINE2"));
         return true;
 
     }

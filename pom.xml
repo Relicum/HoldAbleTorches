@@ -6,7 +6,7 @@
 
     <groupId>org.codemine.holdabletorches</groupId>
     <artifactId>HoldAbleTorches</artifactId>
-    <version>1.13-BETA</version>
+    <version>1.18-BETA</version>
     <name>HoldAbleTorches</name>
     <packaging>jar</packaging>
 
@@ -24,6 +24,8 @@
                 <directory>${basedir}/src/main/resources/</directory>
                 <includes>
                     <include>*.yml</include>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
                 </includes>
             </resource>
         </resources>
@@ -44,7 +46,52 @@
         </pluginManagement>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
+                    <minimizeJar>true</minimizeJar>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.5</version>
+                <configuration>
+                    <rebelXmlDirectory>${basedir}/src/main/resources/</rebelXmlDirectory>
+                    <addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
+                    <showGenerated>true</showGenerated>
+                    <alwaysGenerate>true</alwaysGenerate>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <outputDirectory>${basedir}/dist/plugins/</outputDirectory>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -54,7 +101,13 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+
+            </plugin>
         </plugins>
+
 
     </build>
 
@@ -62,16 +115,21 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.5-R0.1-SNAPSHOT</version>
+            <version>1.7.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>12.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>repobo-snap</id>
-            <name>repo.bukkit.org Snapshots</name>
-            <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
     </repositories>
 

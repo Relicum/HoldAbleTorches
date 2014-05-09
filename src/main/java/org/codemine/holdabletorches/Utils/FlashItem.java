@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class FlashItem {
 
-    private static final String displayName = ChatColor.translateAlternateColorCodes('&', I18N.STRING("flashlight.displayName"));
+    private static final String displayName = altCol(I18N.STRING("flashlight.displayName"));
     private static final List<String> lore =
       Arrays.asList(altCol(I18N.STRING("flashlight.lore1")), altCol(I18N.STRING("flashlight.lore2")), altCol(I18N.STRING("flashlight.lore3")));
     private static final Enchantment enchantment = Enchantment.getByName("UNDROPABLE");

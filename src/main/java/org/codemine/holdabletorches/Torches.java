@@ -1,12 +1,15 @@
 package org.codemine.holdabletorches;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,24 +39,16 @@ import org.codemine.holdabletorches.Commands.CommandHandler;
 import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Commands.FlashLight;
 import org.codemine.holdabletorches.Commands.SightViewer;
+import org.codemine.holdabletorches.Commands.TestC;
 import org.codemine.holdabletorches.Listeners.DropItems;
 import org.codemine.holdabletorches.Listeners.PlayerDeath;
 import org.codemine.holdabletorches.Objects.SerializedCraftSettings;
 import org.codemine.holdabletorches.Objects.SerializedSettings;
+import org.codemine.holdabletorches.Objects.TorchesConfig;
 import org.codemine.holdabletorches.Runnables.TorchTimer;
-import org.codemine.holdabletorches.Utils.Enchanter;
-import org.codemine.holdabletorches.Utils.FlashItem;
-import org.codemine.holdabletorches.Utils.I18N;
-import org.codemine.holdabletorches.Utils.MessageUtil;
-import org.codemine.holdabletorches.Utils.RecipeBuilder;
-import org.codemine.holdabletorches.Utils.RecipeManager;
+import org.codemine.holdabletorches.Utils.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -65,6 +60,8 @@ import java.util.logging.Level;
 public class Torches extends JavaPlugin implements Listener {
 
     public static Torches instance;
+
+    public TorchesConfig config = null;
     public ItemStack torch;
     public CommandManager cm;
     public RecipeBuilder ironSight;
@@ -78,8 +75,9 @@ public class Torches extends JavaPlugin implements Listener {
     public ItemStack wool;
     private int nextId;
     public static Locale locale;
+    public static SerializedSettings ss;
+    public Map<TorchTypes,Object> eMap = Collections.synchronizedMap(new EnumMap<>(TorchTypes.class));
 
-    //public static ResourceBundle messages;
     public static void main(String[] args)
     {
 
@@ -87,55 +85,76 @@ public class Torches extends JavaPlugin implements Listener {
 
     public void onEnable()
     {
-
+        //Register Custom Serialized classes
         ConfigurationSerialization.registerClass(SerializedCraftSettings.class);
         ConfigurationSerialization.registerClass(SerializedSettings.class);
 
         instance = this;
-        locale = new Locale("en", "GB");
-        Locale.setDefault(locale);
 
-        saveResource("MessagesBundle.properties", false);
-        saveResource("MessagesBundle_en_GB.properties", false);
+        this.config = new TorchesConfig(this);
+        try
+        {
+            this.config.init();
+        }
+        catch(InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
+        String l = getConfig().getString("settings.general.locale");
+
+        //Set Up Locale to use currently only English soon to be Dutch to
+
+        locale = new Locale(l.substring(0, 1), l.substring(3, 4));
+        Locale.setDefault(locale);
+        saveResource("MessagesBundle.properties", true);
+        saveResource("MessagesBundle_en_GB.properties", true);
+        saveResource("MessagesBundle_nl_NL.properties", true);
+
+        //TODO Default Crafting settings will remove before release
         //SerializedCraftSettings si=new SerializedCraftSettings("IronSight",true,true,true,true,true,10);
         //SerializedCraftSettings sg=new SerializedCraftSettings("GoldSight",true,true,true,true,true,20);
         //SerializedCraftSettings sd=new SerializedCraftSettings("DiamondSight",true,true,true,true,true,45);
         //SerializedCraftSettings se=new SerializedCraftSettings("EmeraldSight",true,true,true,true,true,60);
 
-        // messages = ResourceBundle.getBundle("MessagesBundle",locale);
-
-        getConfig().options().copyDefaults(true);
-        saveDefaultConfig();
-
+        //Check if plugin should be enabled at all
         if(!getConfig().getBoolean("settings.general.enable"))
         {
-            MessageUtil.log(Level.INFO, I18N.STRING("internal.setAsDisabled"));
+            MessageUtil.log(Level.INFO, I18N.STRING("internal.setasdisabled"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
+        //Create EnumMap to store crafting names more efficient than a normal map
+        eMap.put(TorchTypes.IRONSIGHTS, addAltColor(I18N.STRING("craftlight.ironSight.displayName")));
+        eMap.put(TorchTypes.GOLDSIGHTS, addAltColor(I18N.STRING("craftlight.diamondSight.displayName")));
+        eMap.put(TorchTypes.DIAMONDSIGHTS, addAltColor(I18N.STRING("craftlight.diamondSight.displayName")));
+        eMap.put(TorchTypes.EMERALDSIGHTS, addAltColor(I18N.STRING("craftlight.emeraldSight.displayName")));
+
+        ss = (SerializedSettings) getConfig().get("settings.craftable");
+
         //Register Custom Enchants
         this.enchanter.registerAll();
 
+        //Get FlashLight User Settings
         flashSettings = getConfig().getConfigurationSection("settings.flashlight").getValues(true);
+
+        //Check if FlashLight is to be used or not
+
+        //Start Flash Light SetUp
 
         if((Boolean) flashSettings.get("enable"))
         {
             this.torch = FlashItem.getFlashLight();
         }
-        SerializedSettings ss = (SerializedSettings) getConfig().get("settings.craftable");
-
-        System.out.println("Serialized is " + ss.toString());
-        //System.out.println("Serialized is " + ss.getGoldSight().toString());
-        // System.out.println("Serialized is " + ss.getDiamondSight().toString());
-        // System.out.println("Serialized is " + ss.getEmeraldSight().toString());
-
-        this.nextId = ss.getId();
 
         recipeManager = new RecipeManager();
-        MessageUtil.logInfoFormatted(I18N.STRING("INTERNAL.MADEBY", "relicum") + getDescription().getAuthors());
+        MessageUtil.logInfoFormatted(I18N.STRING("internal.madeby", getDescription().getAuthors()));
         commandHandler = new CommandHandler(this);
         commandHandler.registerCommand(new FlashLight(commandHandler, "flashlight"));
+        commandHandler.registerCommand(new TestC(commandHandler, "testing"));
         cm = new CommandManager();
 
         getCommand("goldsight").setExecutor(cm);
@@ -169,9 +188,8 @@ public class Torches extends JavaPlugin implements Listener {
                                       .setIngredient('L', Material.REDSTONE)
                                       .setIngredient('P', Material.STICK);
         this.ironSight.Build(true, true);
-
-        commandHandler.registerCommand(new SightViewer(commandHandler, "torchviewer", recipeManager.getValidNames()));
         recipeManager.addRecipeName(torch.getItemMeta().getDisplayName());
+        commandHandler.registerCommand(new SightViewer(commandHandler, "torchviewer", recipeManager.getValidNames()));
 
         Iterator<Permission> per = getServer().getPluginManager().getPermissions().iterator();
         while(per.hasNext())
@@ -180,7 +198,7 @@ public class Torches extends JavaPlugin implements Listener {
             System.out.println("Permission name: " + p.getName());
 
             Map<String,Boolean> map1 = p.getChildren();
-            if(map1.size() != 0)
+            if(!map1.isEmpty())
             {
                 System.out.println("Child perms found = " + map1.keySet().toString());
             }
@@ -201,6 +219,7 @@ public class Torches extends JavaPlugin implements Listener {
 
         saveConfig();
         getServer().getScheduler().cancelAllTasks();
+        config.saveConfig();
         getServer().clearRecipes();
     }
 
@@ -228,7 +247,7 @@ public class Torches extends JavaPlugin implements Listener {
         {
             return;
         }
-        Player player = (Player) e.getWhoClicked();
+        HumanEntity player = e.getWhoClicked();
         if(e.getInventory().getType().equals(InventoryType.WORKBENCH))
         {
             if(player.hasMetadata("MENUOPENID") && player.hasMetadata("MENUOPEN"))
@@ -247,6 +266,62 @@ public class Torches extends JavaPlugin implements Listener {
     @EventHandler
     public void pj(final PlayerJoinEvent e)
     {
+
+        String p = "§";
+        String g = "a";
+        String r = "c";
+        String b = "o";
+        boolean t = true;
+        StrBuilder sb = new StrBuilder();
+        sb.setNewLineText("\n");
+        for(int i = 0 ; i < 53 ; i++)
+        {
+            if(t)
+            {
+                sb.append(p + b + p + g + "-");
+                t = false;
+            }
+            else
+            {
+                sb.append(p + b + p + r + "-");
+                t = true;
+            }
+
+        }
+
+        sb.append(ChatColor.RESET);
+        String header = sb.toString() + "\n";
+
+        sb.clear();
+        for(int i = 0 ; i < 53 ; i++)
+        {
+            if(t)
+            {
+                sb.append(p + b + p + r + "-");
+                t = false;
+            }
+            else
+            {
+                sb.append(p + b + p + g + "-");
+                t = true;
+            }
+
+        }
+
+        sb.append(ChatColor.RESET);
+        String footer = sb.toString() + "\n";
+
+        sb.clear();
+        sb.setLength(53);
+        sb.setNewLineText("\n");
+        sb.insert(23, "~ HoldAbleTorches ~");
+
+        e.setJoinMessage(header + ChatColor.YELLOW + ChatColor.ITALIC + "                    |-- HoldAbleTorches --|        \n" + footer);
+
+
+
+
+
 
 /*        e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().firstEmpty(), FlashItem.getFlashLight());
         getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -566,8 +641,28 @@ public class Torches extends JavaPlugin implements Listener {
     public int getNextId()
     {
 
-        nextId++;
-        getConfig().set("settings.craftable.id", nextId);
-        return nextId;
+        ss.incrementId();
+
+        getConfig().set("settings.craftable", ss);
+        return ss.getId();
+    }
+
+    private String addAltColor(final String s)
+    {
+
+        final char COLOR_CHAR = '\u00A7';
+        final char SAFE_CHAR = '&';
+
+        char[] b = s.toCharArray();
+        for(int i = 0 ; i < b.length - 1 ; i++)
+        {
+            if(b[i] == COLOR_CHAR && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1)
+            {
+                b[i] = SAFE_CHAR;
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
+            }
+
+        }
+        return new String(b);
     }
 }

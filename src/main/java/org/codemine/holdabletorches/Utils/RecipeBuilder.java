@@ -23,31 +23,29 @@ import java.util.Map;
  * @author Relicum
  * @version 0.0.1
  */
+@SuppressWarnings({"MethodReturnOfConcreteClass" , "FeatureEnvy" , "UnusedParameters" , "StaticVariableOfConcreteClass" , "ClassWithTooManyFields" , "ClassWithTooManyMethods"})
 public class RecipeBuilder {
 
     private static RecipeBuilder instance;
-    private boolean isBuilt = false;
+    private boolean isBuilt;
     private final char COLOR_CHAR = '\u00A7';
     private final char SAFE_CHAR = '&';
 
     private String[] keyLineFormat;
-    private Material material;
-    private boolean topRow = false;
-    private boolean middleRow = false;
-    private boolean bottomRow = false;
-    private String[] shape = {"" , "" , ""};
-    private StrBuilder page = new StrBuilder();
+    private final Material material;
+    private final String[] shape = {"" , "" , ""};
+    private final StrBuilder page = new StrBuilder();
     private char empty = 'X';
     private ItemStack itemStack;
     private ItemMeta itemMeta;
     private ShapedRecipe shapedRecipe;
     private String disPlayName;
     private List<String> lore;
-    private boolean hasLore = false;
-    private Map<Character,String> ingredients = new HashMap<>();
-    private Map<String,Enchantment> enchantmentMap = new HashMap<>();
-    public ItemStack[] result = new ItemStack[9];
-    public List<Character> keys = new ArrayList<>(9);
+    private boolean hasLore;
+    private final Map<Character,String> ingredients = new HashMap<>();
+    private final Map<String,Enchantment> enchantmentMap = new HashMap<>();
+    private final ItemStack[] result = new ItemStack[9];
+    private final List<Character> keys = new ArrayList<>(9);
     public List<Enchantment> enchants = new ArrayList<>(2);
 
     /**
@@ -55,7 +53,7 @@ public class RecipeBuilder {
      *
      * @param material {@link org.bukkit.Material} used to make the ItemStack for the crafting Item
      */
-    public RecipeBuilder(Material material)
+    public RecipeBuilder(final Material material)
     {
 
         instance = this;
@@ -104,7 +102,8 @@ public class RecipeBuilder {
      * @param first the first row of the custom recipe MUST be 3 char in length
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setTopRow(String first)
+    @SuppressWarnings("MethodReturnOfConcreteClass")
+    public RecipeBuilder setTopRow(final String first)
     {
 
         Validate.notNull(first);
@@ -116,7 +115,7 @@ public class RecipeBuilder {
             this.keys.add(i, first.charAt(i));
         }
 
-        this.topRow = true;
+        boolean topRow = true;
         return this;
     }
 
@@ -126,7 +125,7 @@ public class RecipeBuilder {
      * @param middleRow the middle row
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setMiddleRow(String middleRow)
+    public RecipeBuilder setMiddleRow(final String middleRow)
     {
 
         Validate.isTrue(middleRow.length() == 3);
@@ -136,7 +135,7 @@ public class RecipeBuilder {
         {
             this.keys.add(i + 3, middleRow.charAt(i));
         }
-        this.middleRow = true;
+        boolean middleRow1 = true;
         return this;
     }
 
@@ -147,7 +146,7 @@ public class RecipeBuilder {
      * @param bottomRow the bottom row
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setBottomRow(String bottomRow)
+    public RecipeBuilder setBottomRow(final String bottomRow)
     {
 
         Validate.isTrue(bottomRow.length() == 3);
@@ -156,7 +155,7 @@ public class RecipeBuilder {
         {
             this.keys.add(i + 6, bottomRow.charAt(i));
         }
-        this.bottomRow = true;
+        boolean bottomRow1 = true;
         return this;
     }
 
@@ -181,14 +180,14 @@ public class RecipeBuilder {
      * @param lines String[]
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setShape(String[] lines)
+    public RecipeBuilder setShape(final String[] lines)
     {
 
         Validate.notNull(lines, "Argument can not be null");
         Validate.isTrue(lines.length != 3, "The must be 3 lines for recipe");
 
         int co = 0;
-        for(String line : lines)
+        for(final String line : lines)
         {
             this.shape[co] = addColor(line.replace(" ", "X"));
             co++;
@@ -205,7 +204,7 @@ public class RecipeBuilder {
      * @param c the {@link java.lang.Character} to use to signify any empty slot defaults to 'X'
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setEmptyChar(char c)
+    public RecipeBuilder setEmptyChar(final char c)
     {
 
         Validate.notNull(c, "Argument can not be null");
@@ -220,7 +219,7 @@ public class RecipeBuilder {
      * @param disPlayName {@link java.lang.String} DisplayName to set for the ItemMeta
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setItemDisplayName(String disPlayName)
+    public RecipeBuilder setItemDisplayName(final String disPlayName)
     {
 
         Validate.isTrue(disPlayName.length() < 64, "Display Name Must be less than 65 characters in length: " + disPlayName);
@@ -236,7 +235,7 @@ public class RecipeBuilder {
      * @param lore {@link org.bukkit.inventory.meta.ItemMeta} that is applied to the Custom item
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setItemLore(List<String> lore)
+    public RecipeBuilder setItemLore(final List<String> lore)
     {
 
         Validate.notEmpty(lore, "Lore can't be empty");
@@ -261,7 +260,7 @@ public class RecipeBuilder {
      * @param ignoreLevelRestriction if true safe levels of enchant will be ignored and you can enchant to up to 1000
      * @return the recipe builder
      */
-    public RecipeBuilder addUnSafeEnchant(Enchantment enchantment, int level, boolean ignoreLevelRestriction)
+    public RecipeBuilder addUnSafeEnchant(final Enchantment enchantment, final int level, final boolean ignoreLevelRestriction)
     {
 
         return this;
@@ -274,7 +273,7 @@ public class RecipeBuilder {
      * @param ingredient The ingredient. {@link org.bukkit.Material}
      * @return the {@link org.codemine.holdabletorches.Utils.RecipeBuilder} for chaining
      */
-    public RecipeBuilder setIngredient(Character key, Material ingredient)
+    public RecipeBuilder setIngredient(final Character key, final Material ingredient)
     {
 
         this.ingredients.put(key, ingredient.name());
@@ -288,7 +287,7 @@ public class RecipeBuilder {
      *
      * @param register the register
      */
-    public void Build(boolean register, boolean save)
+    public void Build(final boolean register, final boolean save)
     {
 
         Validate.notNull(this.material, "Material can not be null");
@@ -315,7 +314,7 @@ public class RecipeBuilder {
         this.shapedRecipe.shape(shape);
 
         int c = 0;
-        for(Map.Entry<Character,String> entry : this.ingredients.entrySet())
+        for(final Map.Entry<Character,String> entry : this.ingredients.entrySet())
         {
 
             this.shapedRecipe.setIngredient(entry.getKey(), Material.valueOf(entry.getValue()));
@@ -324,7 +323,7 @@ public class RecipeBuilder {
         }
 
         int tc = 0;
-        for(Character ch : keys)
+        for(final Character ch : keys)
         {
             result[tc] = mapIngredientToKey(ch);
             tc++;
@@ -352,7 +351,7 @@ public class RecipeBuilder {
         //con.set("ingredients", ingredients);
         String[] tmp = new String[3];
         int co = 0;
-        for(String s : shape)
+        for(final String s : shape)
         {
             tmp[co] = s.replace(" ", "X");
             co++;
@@ -374,7 +373,7 @@ public class RecipeBuilder {
      * Only need to call this if Build method was passed false.
      * Don't call it twice or more or your register multiple instances
      */
-    public void registerRecipe()
+    void registerRecipe()
     {
 
         Validate.isTrue(this.isBuilt, "You need to run Build before you can register the new Recipe");
@@ -385,7 +384,7 @@ public class RecipeBuilder {
 
     }
 
-    public void saveMatrix(ItemStack[] stacks, String name)
+    public void saveMatrix(final ItemStack[] stacks, final String name)
     {
 
         if(!Torches.getInstance().getConfig().contains("recipes." + name))
@@ -396,7 +395,7 @@ public class RecipeBuilder {
 
     }
 
-    private ItemStack mapIngredientToKey(Character character)
+    private ItemStack mapIngredientToKey(final Character character)
     {
 
         if(ingredients.containsKey(character))
@@ -408,18 +407,15 @@ public class RecipeBuilder {
 
     }
 
-    public void altColorMeta()
+    void altColorMeta()
     {
 
-        List<String> tmp = new ArrayList<>(this.lore.size());
-        for(String s : this.lore)
-        {
-            tmp.add(addAltColor(s));
-        }
+        //List<String> tmp = new ArrayList<>(this.lore.size());
+        //tmp.addAll(this.lore.stream().map(this::addAltColor).collect(Collectors.toList()));
 
-        this.itemMeta.setLore(tmp);
-        this.itemMeta.setDisplayName(addAltColor(disPlayName));
-        this.itemStack.setItemMeta(this.itemMeta);
+        //  this.itemMeta.setLore(this.lore.stream().map(this::addAltColor).collect(Collectors.toList()));
+        //   this.itemMeta.setDisplayName(addAltColor(disPlayName));
+        //  this.itemStack.setItemMeta(this.itemMeta);
 
     }
 
@@ -456,7 +452,7 @@ public class RecipeBuilder {
 
     }
 
-    public String setRecipeFormat(String line)
+    public String setRecipeFormat(final String line)
     {
 
         return String.format(new StrBuilder().append(COLOR_CHAR).append('a').append('|').appendPadding(2, ' ').append(COLOR_CHAR).append('d').append("%s").appendPadding(2, ' ')
@@ -465,7 +461,7 @@ public class RecipeBuilder {
 
     }
 
-    private String formatIngredientLine(Character key, String val)
+    private String formatIngredientLine(final Character key, String val)
     {
 
         if(key.equals(empty)) val = "EMPTY";
@@ -498,7 +494,7 @@ public class RecipeBuilder {
      * @param s {@link String} {@link String} the text to convert color chars to correct format
      * @return the {@link String} line of text which has color formatted
      */
-    private String addColor(String s)
+    private String addColor(final String s)
     {
 
         char[] b = s.toCharArray();
@@ -514,7 +510,7 @@ public class RecipeBuilder {
         return new String(b);
     }
 
-    private String addAltColor(String s)
+    private String addAltColor(final String s)
     {
 
         char[] b = s.toCharArray();
@@ -534,33 +530,6 @@ public class RecipeBuilder {
     {
 
         return this.isBuilt;
-    }
-
-    public ItemStack[] getShapeAsStack()
-    {
-
-        int num = 9;
-        for(int i = 0 ; i < 3 ; i++)
-        {
-            char[] chars = shape[1].toCharArray();
-            num--;
-            for(int c = 0 ; c < 3 ; c++)
-            {
-
-                Material mat = Material.valueOf(shape[chars[c]]);
-                result[c] = new ItemStack(mat);
-
-            }
-        }
-        return null
-          ;
-    }
-
-    public ItemStack[] setMatr()
-    {
-
-        return null;
-
     }
 
 }

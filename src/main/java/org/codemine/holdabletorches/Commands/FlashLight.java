@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.codemine.holdabletorches.Torches;
+import org.codemine.holdabletorches.Utils.FlashItem;
 import org.codemine.holdabletorches.Utils.I18N;
 import org.codemine.holdabletorches.Utils.MessageUtil;
 
@@ -52,7 +52,7 @@ public class FlashLight extends SimpleCommand {
                 if (itemStack.hasItemMeta()) {
                     if (itemStack.getItemMeta().hasDisplayName()) {
                         if (ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase("HoldAble Torch")) {
-                            MessageUtil.sendErrorMessage(player, I18N.STRING("FLASHLIGHT.ALREADY.HAS"));
+                            MessageUtil.sendErrorMessage(player, I18N.STRING("flashlight.already.has"));
                             return true;
                         }
                     }
@@ -65,10 +65,10 @@ public class FlashLight extends SimpleCommand {
 
         // item.getUniqueId();
 
-        player.getInventory().setItem(player.getInventory().firstEmpty(), Torches.getInstance().torch.clone());
+        player.getInventory().setItem(player.getInventory().firstEmpty(), FlashItem.getFlashLight());
         // player.getInventory().setItem(player.getInventory().firstEmpty(),item.getItemStack());
-        MessageUtil.sendMessage(player, I18N.STRING("FLASHLIGHT.LORE.LINE1"));
-        MessageUtil.sendMessage(player, I18N.STRING("FLASHLIGHT.LORE.LINE2"));
+        MessageUtil.sendMessage(player, I18N.STRING("flashlight.lore.line1"));
+        MessageUtil.sendMessage(player, I18N.STRING("flashlight.lore.line2"));
         return true;
 
     }

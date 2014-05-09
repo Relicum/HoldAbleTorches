@@ -22,8 +22,8 @@ public class I18N {
     private static final ResourceBundle bundle = ResourceBundle.getBundle("MessagesBundle", locale);
 
     public static String STRING
-      (@PropertyKey(resourceBundle = "MessagesBundle")
-       String key, Object... params)
+      (@PropertyKey(resourceBundle = "MessagesBundle") final
+       String key, final Object... params)
     {
 
         String value = bundle.getString(key);

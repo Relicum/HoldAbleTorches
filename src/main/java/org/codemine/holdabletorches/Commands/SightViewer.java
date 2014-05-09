@@ -1,5 +1,6 @@
 package org.codemine.holdabletorches.Commands;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -11,9 +12,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.StringUtil;
 import org.codemine.holdabletorches.Runnables.OpenView;
 import org.codemine.holdabletorches.Torches;
+import org.codemine.holdabletorches.Utils.I18N;
 import org.codemine.holdabletorches.Utils.MessageUtil;
+import org.codemine.holdabletorches.Utils.TorchTypes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,15 +37,14 @@ import java.util.List;
 )
 public class SightViewer extends SimpleCommand {
 
-    public static List<String> RECIPES;
-    int task;
+    private static List<String> RECIPES = null;
 
-    public SightViewer(CommandHandler commandHandler, String name, List<String> recipe)
+    @SuppressWarnings("MethodParameterOfConcreteClass")
+    public SightViewer(final CommandHandler commandHandler, final String name, final Collection<String> recipe)
     {
 
         super(commandHandler, name);
-        RECIPES = new ArrayList<>(recipe.size());
-        RECIPES.addAll(recipe);
+        RECIPES = ImmutableList.copyOf(recipe);
     }
 
     /**
@@ -52,38 +55,43 @@ public class SightViewer extends SimpleCommand {
      * @param args
      */
     @Override
-    public boolean onCommand(CommandSender sender, String command, String[] args)
+    public boolean onCommand(final CommandSender sender, final String command, final String[] args)
     {
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
         ItemStack[] matrix;
+        String torchName;
 
         switch(args[0].toLowerCase())
         {
             case "ironsight":
                 matrix = Torches.getInstance().ironSight.getMatrix();
+                torchName = (String) Torches.getInstance().eMap.get(TorchTypes.IRONSIGHTS);
                 player.setMetadata("MENUOPEN", new FixedMetadataValue(Torches.getInstance(), Boolean.TRUE));
                 break;
             case "goldsight":
                 matrix = Torches.getInstance().goldSight.getMatrix();
+                torchName = (String) Torches.getInstance().eMap.get(TorchTypes.GOLDSIGHTS);
                 player.setMetadata("MENUOPEN", new FixedMetadataValue(Torches.getInstance(), Boolean.TRUE));
                 break;
             default:
-                MessageUtil.sendErrorMessage(player, "Invalid Recipe");
+                MessageUtil.sendErrorMessage(player, I18N.STRING("sightviewer.invalid.recipe"));
                 return true;
         }
 
-        InventoryView inventoryView = player.openWorkbench(null, true);
+        final InventoryView inventoryView = player.openWorkbench(null, true);
 
-        CraftingInventory inventory = (CraftingInventory) inventoryView.getTopInventory();
+        final CraftingInventory inventory = (CraftingInventory) inventoryView.getTopInventory();
 
         inventory.setMatrix(matrix);
         inventory.setResult(new ItemStack(Material.REDSTONE_TORCH_ON));
         inventory.setMaxStackSize(1);
 
-        sender.sendMessage("You have selected " + args[0]);
-        this.task = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Torches.getInstance(), new OpenView(player, inventory), 200l);
-        player.setMetadata("MENUOPENID", new FixedMetadataValue(Torches.getInstance(), this.task));
+        MessageUtil.sendMessage(player, I18N.STRING("sightviewer.recipe.1", torchName));
+        MessageUtil.sendMessage(player, I18N.STRING("sightviewer.recipe.2"));
+        MessageUtil.sendMessage(player, I18N.STRING("sightviewer.recipe.3", torchName, 20));
+        int task = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Torches.getInstance(), new OpenView(player, inventory), 200l);
+        player.setMetadata("MENUOPENID", new FixedMetadataValue(Torches.getInstance(), task));
         System.out.println("Number of tasks remaining is " + Bukkit.getScheduler().getPendingTasks().size());
 
         return true;
@@ -97,13 +105,13 @@ public class SightViewer extends SimpleCommand {
      * @param args
      */
     @Override
-    public List<String> tabComplete(CommandSender sender, String s, String[] args)
+    public List<String> tabComplete(final CommandSender sender, final String s, final String[] args)
     {
 
         if(args.length == 1)
         {
             return StringUtil.copyPartialMatches(args[0], RECIPES, new ArrayList<String>(RECIPES.size()));
         }
-        return null;
+        return ImmutableList.of();
     }
 }

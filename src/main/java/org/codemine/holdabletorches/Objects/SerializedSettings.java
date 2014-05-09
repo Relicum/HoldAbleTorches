@@ -56,7 +56,7 @@ public class SerializedSettings implements ConfigurationSerializable {
     public Map<String,Object> serialize()
     {
 
-        Map<String,Object> map = new HashMap<>(6);
+        Map<String,Object> map = new HashMap<>();
         map.put("enable", isEnable());
         map.put("id", getId());
         map.put("ironsight", getIronSight());
@@ -136,6 +136,12 @@ public class SerializedSettings implements ConfigurationSerializable {
     {
 
         this.id = id;
+    }
+
+    public void incrementId()
+    {
+
+        this.id++;
     }
 
     @Override

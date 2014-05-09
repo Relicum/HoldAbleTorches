@@ -29,27 +29,35 @@ public class CommandHandler {
     private JavaPlugin plugin;
     private List<SimpleCommand> cmdList = new ArrayList<>();
 
-    public CommandHandler(JavaPlugin plugin) {
+    public CommandHandler(JavaPlugin plugin)
+    {
+
         this.plugin = plugin;
         list.add(this);
-        try {
+        try
+        {
             Field f = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             f.setAccessible(true);
 
             scmp = (SimpleCommandMap) f.get(Bukkit.getServer());
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-    public void registerCommand(SimpleCommand command) {
+    public void registerCommand(SimpleCommand command)
+    {
 
         String[] ps = command.permission().split("\\.");
         String ubPerm = "";
         Integer max = ps.length - 1;
-        for (int i = 0; i < max; i++) {
+        for(int i = 0 ; i < max ; i++)
+        {
             ubPerm += ps[i];
-            if (i != max - 1) {
+            if(i != max - 1)
+            {
                 ubPerm += ".";
             }
         }
@@ -67,29 +75,43 @@ public class CommandHandler {
 
     }
 
-    public void registerCommands(List<SimpleCommand> commands) {
-        for (SimpleCommand command : commands) {
+    public void registerCommands(List<SimpleCommand> commands)
+    {
+
+        //commands.forEach(this::registerCommand);
+        for(final SimpleCommand command : commands)
+        {
             registerCommand(command);
         }
     }
 
-    public void registerCommands(SimpleCommand[] commands) {
+    public void registerCommands(SimpleCommand[] commands)
+    {
+
         registerCommands(Arrays.asList(commands));
     }
 
-    public SimpleCommandMap getCommand() {
+    public SimpleCommandMap getCommand()
+    {
+
         return scmp;
     }
 
-    public List<SimpleCommand> getCommands() {
+    public List<SimpleCommand> getCommands()
+    {
+
         return cmdList;
     }
 
-    public static List<CommandHandler> getCommandManagers() {
+    public static List<CommandHandler> getCommandManagers()
+    {
+
         return list;
     }
 
-    public JavaPlugin getPlugin() {
+    public JavaPlugin getPlugin()
+    {
+
         return plugin;
     }
 }

@@ -1,5 +1,6 @@
 package org.codemine.holdabletorches.Runnables;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.CraftingInventory;
 import org.codemine.holdabletorches.Torches;
@@ -12,10 +13,10 @@ import org.codemine.holdabletorches.Torches;
  */
 public class OpenView implements Runnable {
 
-    public Player player;
-    public CraftingInventory inventory;
+    private final Player player;
+    private final CraftingInventory inventory;
 
-    public OpenView(Player player, CraftingInventory inv)
+    public OpenView(final Player player, final CraftingInventory inv)
     {
 
         this.player = player;
@@ -29,10 +30,18 @@ public class OpenView implements Runnable {
 
         inventory.clear();
 
-        player.closeInventory();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Torches.getInstance(), new Runnable() {
+
+            @Override
+            public void run()
+            {
+
+                player.getOpenInventory().close();
+            }
+        }, 1l);
+
         player.removeMetadata("MENUOPENID", Torches.getInstance());
         player.removeMetadata("MENUOPEN", Torches.getInstance());
 
     }
-
 }

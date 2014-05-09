@@ -27,7 +27,7 @@ public class TorchOff extends BukkitRunnable {
     public TorchOff(Player player, ItemStack itemStack)
     {
 
-        Validate.isTrue(itemStack.getType().equals(Material.REDSTONE_TORCH_ON), I18N.STRING("TORCHOFF.VALIDATION"));
+        Validate.isTrue(itemStack.getType().equals(Material.REDSTONE_TORCH_ON), I18N.STRING("torchoff.validation"));
         this.player = player;
         this.stack = itemStack;
         this.meta = itemStack.getItemMeta();

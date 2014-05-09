@@ -15,16 +15,13 @@ import org.codemine.holdabletorches.Utils.MessageUtil;
  */
 public class TorchTimer implements Runnable {
 
-    private long start;
-    private long end;
-    private Player player;
+    private final Player player;
     private ItemStack itemStack;
-    private int currentSlot;
+    private final int currentSlot;
 
-    public TorchTimer(Player player, ItemStack itemStack)
+    public TorchTimer(final Player player, final ItemStack itemStack)
     {
 
-        start = System.currentTimeMillis();
         this.player = player;
         this.itemStack = itemStack;
         this.currentSlot = player.getInventory().getHeldItemSlot();
@@ -35,9 +32,8 @@ public class TorchTimer implements Runnable {
     public void run()
     {
 
-        end = System.currentTimeMillis();
-        this.player.getInventory().clear(this.currentSlot);
-        this.player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        player.getInventory().clear(this.currentSlot);
+        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         player.playSound(player.getLocation(), Sound.CLICK, 5.0f, 1.0f);
         player.removeMetadata("HATREDMETA", Torches.getInstance());
         player.removeMetadata("HATREDTASKID", Torches.getInstance());

@@ -2,6 +2,7 @@ settings:
   general:
     firstload: true
     enable: true
+    locale: en_US
   flashlight:
     enable: true
     usepermission: true

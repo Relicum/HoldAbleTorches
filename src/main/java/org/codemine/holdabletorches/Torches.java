@@ -39,7 +39,6 @@ import org.codemine.holdabletorches.Commands.CommandHandler;
 import org.codemine.holdabletorches.Commands.CommandManager;
 import org.codemine.holdabletorches.Commands.FlashLight;
 import org.codemine.holdabletorches.Commands.SightViewer;
-import org.codemine.holdabletorches.Commands.TestC;
 import org.codemine.holdabletorches.Listeners.DropItems;
 import org.codemine.holdabletorches.Listeners.PlayerDeath;
 import org.codemine.holdabletorches.Objects.SerializedCraftSettings;
@@ -154,7 +153,7 @@ public class Torches extends JavaPlugin implements Listener {
         MessageUtil.logInfoFormatted(I18N.STRING("internal.madeby", getDescription().getAuthors()));
         commandHandler = new CommandHandler(this);
         commandHandler.registerCommand(new FlashLight(commandHandler, "flashlight"));
-        commandHandler.registerCommand(new TestC(commandHandler, "testing"));
+
         cm = new CommandManager();
 
         getCommand("goldsight").setExecutor(cm);
